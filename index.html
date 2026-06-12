@@ -114,7 +114,7 @@ input[type=file]{display:none;}
 
 <!-- Setup -->
 <div id="screen-setup" class="screen active">
-  <div class="header"><div class="header-info"><span class="header-logo">v2 BayInvent</span></div></div>
+  <div class="header"><div class="header-info"><span class="header-logo">v3 BayInvent</span></div></div>
   <div class="setup-body">
     <h1 class="setup-title">Connect to Sheets</h1>
     <p class="setup-sub">Enter your Apps Script Web App URL. Saved on this device.</p>
@@ -127,7 +127,7 @@ input[type=file]{display:none;}
 <div id="screen-search" class="screen">
   <div class="header">
     <div class="header-info">
-      <span class="header-logo">v2 BayInvent</span>
+      <span class="header-logo">v3 BayInvent</span>
       <span class="header-sub" id="header-count"></span>
     </div>
   </div>
@@ -316,7 +316,13 @@ function loadSavedPhotos() {
     .then(function(r) { return r.json(); })
     .then(function(data) {
       savedPhotos = { licence:[], pickup:[], dropoff:[] };
-      (data.photos||[]).forEach(function(p) { if(savedPhotos[p.category]) savedPhotos[p.category].push(p); });
+      (data.photos||[]).forEach(function(p) {
+        if(savedPhotos[p.category]) {
+          // Use direct Drive thumbnail URL — works cross-origin, no CORS issues
+          p.thumbUrl = 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w300';
+          savedPhotos[p.category].push(p);
+        }
+      });
       ['licence','pickup','dropoff'].forEach(renderSection);
     })
     .catch(function() {});
@@ -334,7 +340,7 @@ function renderSection(tab) {
   head.className = 'photo-section-head'+(total>0?' has-photos':'');
   var html = '';
   saved.forEach(function(p) {
-    html += '<div class="thumb" onclick="window.open(\''+p.viewUrl+'\')">'
+    html += '<div class="thumb" onclick="window.open(\''+p.viewUrl+'\',\'_blank\')">'
       + '<img src="'+p.thumbUrl+'" loading="lazy" onerror="this.style.background=\'var(--gray-100)\'">'
       + '<div class="thumb-label">saved</div></div>';
   });
