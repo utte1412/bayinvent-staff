@@ -114,7 +114,7 @@ input[type=file]{display:none;}
 
 <!-- Setup -->
 <div id="screen-setup" class="screen active">
-  <div class="header"><div class="header-info"><span class="header-logo">v3 BayInvent</span></div></div>
+  <div class="header"><div class="header-info"><span class="header-logo">v4 BayInvent</span></div></div>
   <div class="setup-body">
     <h1 class="setup-title">Connect to Sheets</h1>
     <p class="setup-sub">Enter your Apps Script Web App URL. Saved on this device.</p>
@@ -127,7 +127,7 @@ input[type=file]{display:none;}
 <div id="screen-search" class="screen">
   <div class="header">
     <div class="header-info">
-      <span class="header-logo">v3 BayInvent</span>
+      <span class="header-logo">v4 BayInvent</span>
       <span class="header-sub" id="header-count"></span>
     </div>
   </div>
@@ -180,6 +180,14 @@ input[type=file]{display:none;}
         <span class="photo-section-count" id="count-pickup">0 photos</span>
       </div>
       <div class="photo-grid" id="grid-pickup"></div>
+      <div class="mileage-wrap">
+        <span class="mileage-label">Pickup Mileage (km)</span>
+        <div class="mileage-row">
+          <input class="mileage-input" id="mileage-pickup" type="number" placeholder="e.g. 45230" inputmode="numeric">
+          <button class="mileage-save" onclick="saveMileage('pickup')">Save</button>
+        </div>
+        <div class="mileage-saved" id="mileage-saved-pickup">✓ Saved</div>
+      </div>
       <div class="photo-btn-wrap">
         <button class="btn-camera" onclick="addPhoto('pickup')">&#128247; Add Photo</button>
       </div>
@@ -191,6 +199,14 @@ input[type=file]{display:none;}
         <span class="photo-section-count" id="count-dropoff">0 photos</span>
       </div>
       <div class="photo-grid" id="grid-dropoff"></div>
+      <div class="mileage-wrap">
+        <span class="mileage-label">Dropoff Mileage (km)</span>
+        <div class="mileage-row">
+          <input class="mileage-input" id="mileage-dropoff" type="number" placeholder="e.g. 46850" inputmode="numeric">
+          <button class="mileage-save" onclick="saveMileage('dropoff')">Save</button>
+        </div>
+        <div class="mileage-saved" id="mileage-saved-dropoff">✓ Saved</div>
+      </div>
       <div class="photo-btn-wrap">
         <button class="btn-camera" onclick="addPhoto('dropoff')">&#128247; Add Photo</button>
       </div>
@@ -305,6 +321,14 @@ function openBooking(encoded) {
   updateUploadButton();
   show('screen-booking');
   document.getElementById('photo-scroll').scrollTop = 0;
+  // Clear mileage fields
+  ['pickup','dropoff'].forEach(function(t) {
+    document.getElementById('mileage-'+t).value = '';
+    document.getElementById('mileage-saved-'+t).style.display = 'none';
+  });
+  // Pre-fill mileage if already in booking data
+  if (currentBooking.pickupMileage)  document.getElementById('mileage-pickup').value  = currentBooking.pickupMileage;
+  if (currentBooking.dropoffMileage) document.getElementById('mileage-dropoff').value = currentBooking.dropoffMileage;
   loadSavedPhotos();
 }
 
@@ -366,6 +390,43 @@ function updateUploadButton() {
 }
 
 // ── Add photo ───────────────────────────────────────────────
+// ── Save mileage ────────────────────────────────────────────
+function saveMileage(type) {
+  var val = document.getElementById('mileage-'+type).value.trim();
+  if (!val) { toast('Please enter a mileage value', 'error'); return; }
+  var btn = document.querySelector('#section-'+type+' .mileage-save');
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({
+      action:    'saveMileage',
+      bookingId: currentBooking.id,
+      type:      type,
+      value:     parseFloat(val)
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    btn.textContent = 'Save';
+    btn.disabled = false;
+    if (result && result.ok) {
+      var saved = document.getElementById('mileage-saved-'+type);
+      saved.style.display = 'block';
+      setTimeout(function() { saved.style.display = 'none'; }, 2000);
+      toast((type==='pickup'?'Pickup':'Dropoff')+' mileage saved ✓', 'success');
+    } else {
+      toast(result.message || 'Could not save mileage', 'error');
+    }
+  })
+  .catch(function() {
+    btn.textContent = 'Save';
+    btn.disabled = false;
+    toast('Connection error', 'error');
+  });
+}
+
 function addPhoto(tab) {
   pendingTab = tab;
   document.getElementById('file-input').click();
@@ -486,3 +547,4 @@ init();
 </script>
 </body>
 </html>
+
