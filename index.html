@@ -103,6 +103,14 @@ html,body{
 .setup-btn{width:100%;padding:16px;background:var(--green);color:var(--white);border:none;border-radius:var(--r);font-size:16px;font-weight:600;cursor:pointer;}
 
 /* ── Toast ── */
+.mileage-wrap{padding:8px 10px 10px;background:#fafbfa;border-top:1px solid var(--gray-100);}
+.mileage-label{font-size:13px;font-weight:600;color:var(--gray-500);margin-bottom:8px;display:block;}
+.mileage-input{width:100%;border:2px solid var(--gray-300);border-radius:var(--r);padding:14px 16px;font-size:22px;font-weight:600;outline:none;-webkit-appearance:none;background:var(--white);text-align:center;letter-spacing:1px;color:var(--gray-800);}
+.mileage-input:focus{border-color:var(--green);}
+.mileage-input::placeholder{font-size:16px;font-weight:400;letter-spacing:0;color:var(--gray-300);}
+.mileage-save{width:100%;margin-top:8px;background:var(--green);color:var(--white);border:none;border-radius:var(--r);padding:13px;font-size:15px;font-weight:600;cursor:pointer;display:block;}
+.mileage-save:active{background:var(--green-dark);}
+.mileage-saved{font-size:13px;color:var(--green);margin-top:6px;text-align:center;display:none;font-weight:600;}
 .toast{position:fixed;bottom:calc(var(--safe-bottom)+16px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray-800);color:var(--white);padding:11px 20px;border-radius:var(--r);font-size:14px;font-weight:500;opacity:0;transition:all 0.25s;z-index:9999;pointer-events:none;max-width:calc(100% - 40px);text-align:center;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast.success{background:var(--green);}
@@ -114,7 +122,7 @@ input[type=file]{display:none;}
 
 <!-- Setup -->
 <div id="screen-setup" class="screen active">
-  <div class="header"><div class="header-info"><span class="header-logo">v6 BayInvent</span></div></div>
+  <div class="header"><div class="header-info"><span class="header-logo">v7 BayInvent</span></div></div>
   <div class="setup-body">
     <h1 class="setup-title">Connect to Sheets</h1>
     <p class="setup-sub">Enter your Apps Script Web App URL. Saved on this device.</p>
@@ -127,7 +135,7 @@ input[type=file]{display:none;}
 <div id="screen-search" class="screen">
   <div class="header">
     <div class="header-info">
-      <span class="header-logo">v6 BayInvent</span>
+      <span class="header-logo">v7 BayInvent</span>
       <span class="header-sub" id="header-count"></span>
     </div>
   </div>
